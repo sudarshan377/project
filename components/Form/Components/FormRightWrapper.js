@@ -29,6 +29,11 @@ const FormRightWrapper = () => {
     setUploadLoading(true);
 
     if(Handler.form.story !== "") {
+      if (typeof Handler.form.story !== 'string') {
+        setUploadLoading(false);
+        return toast.warn("Story must be text.");
+      }
+  
       try {
         const added = await client.add(Handler.form.story);
         Handler.setStoryUrl(added.path)
@@ -39,7 +44,13 @@ const FormRightWrapper = () => {
 
 
       if(Handler.image !== null) {
-          try {
+        const allowedTypes = ['image/jpeg', 'image/png'];
+        if (!allowedTypes.includes(Handler.image.type)) {
+          setUploadLoading(false);
+          return toast.warn("Please upload a PNG or JPG image.");
+        } 
+        
+        try {
               const added = await client.add(Handler.image);
               Handler.setImageUrl(added.path)
           } catch (error) {
